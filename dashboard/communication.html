@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication - Vendaa</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #1D4ED8;
+            --secondary-gray: #F3F4F6;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --border-color: #E5E7EB;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Inter", Arial, sans-serif; background-color: var(--secondary-gray); color: var(--text-dark); }
+
+        .app-layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+        .sidebar { background-color: var(--white); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 24px; }
+        .sidebar-header { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+        .sidebar-header img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .sidebar-header h1 { font-size: 18px; font-weight: 600; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; text-decoration: none; color: var(--text-light); font-weight: 500; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-nav a:hover { background-color: var(--secondary-gray); color: var(--text-dark); }
+        .sidebar-nav a.active { background-color: var(--primary-blue); color: var(--white); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
+        .sidebar-nav a i { width: 20px; text-align: center; }
+        .sidebar-footer { margin-top: auto; }
+        
+        .main-content { padding: 32px; overflow-y: auto; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .main-header h2 { font-size: 24px; font-weight: 600; }
+        
+        /* --- Page-Specific Styles --- */
+        .card { background-color: var(--white); padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
+        .table-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;}
+        .search-group { position: relative; }
+        .search-group i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        .search-group input { padding: 10px 10px 10px 36px; border: 1px solid var(--border-color); border-radius: 8px; width: 300px; font-size: 14px; }
+        
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background-color: var(--primary-blue); color: var(--white); }
+        .btn-secondary { background-color: var(--secondary-gray); color: var(--text-dark); border: 1px solid var(--border-color); }
+        
+        .modules-table { width: 100%; border-collapse: collapse; }
+        .modules-table th, .modules-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .modules-table th { font-size: 12px; text-transform: uppercase; color: var(--text-light); font-weight: 600; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .status-badge.online { background-color: #D1FAE5; color: #065F46; }
+        .status-badge.offline { background-color: #FEE2E2; color: #991B1B; }
+        .action-buttons button { background: none; border: none; color: var(--text-light); margin: 0 8px; font-size: 16px; cursor: pointer; }
+        .action-buttons button:hover { color: var(--primary-blue); }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+        .modal-content { background: var(--white); padding: 32px; border-radius: 12px; width: 90%; max-width: 600px; transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-title { font-size: 20px; font-weight: 600; }
+        .modal-close { font-size: 24px; color: var(--text-light); cursor: pointer; border: none; background: none; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2); }
+        
+        .hidden { display: none !important; }
+        .visible { opacity: 1; pointer-events: auto; }
+        .visible .modal-content { transform: scale(1); }
+
+        @media (max-width: 1024px) {
+            .app-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header"><img src="https://i.pravatar.cc/40?img=1" alt="Organization Logo"><h1>TechSolutions Inc.</h1></div>
+            <nav class="sidebar-nav">
+                <a href="home.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="wallet.html" class="active"><i class="fa-solid fa-wallet"></i> Wallet</a>
+                <a href="meters.html"><i class="fa-solid fa-bolt"></i> Meters</a>
+                <a href="vending.html"><i class="fa-solid fa-file-invoice"></i> Vending</a>
+                <a href="reports.html"><i class="fa-solid fa-chart-pie"></i> Reports</a>
+                <a href="communication.html"><i class="fa-solid fa-sliders"></i> Communication</a>
+            </nav>
+            <div class="sidebar-footer">
+                 <nav class="sidebar-nav">
+                     <a href="#"><i class="fa-solid fa-user-circle"></i> Account</a>
+                     <a href="#"><i class="fa-solid fa-code"></i> Developer</a>
+                     <a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                 </nav>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h2>Communication Management</h2>
+            </header>
+
+            <div class="card">
+                <div class="table-toolbar">
+                    <div class="search-group">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="search" placeholder="Search by module ID...">
+                    </div>
+                    <button class="btn btn-primary" id="add-module-btn"><i class="fa-solid fa-plus"></i> Add New Module</button>
+                </div>
+
+                <table class="modules-table">
+                    <thead>
+                        <tr>
+                            <th>Module ID</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Last Heartbeat</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-id="DCU-001" data-type="DCU" data-ip="192.168.1.10" data-port="8080">
+                            <td>DCU-001</td>
+                            <td>DCU</td>
+                            <td><span class="status-badge online">Online</span></td>
+                            <td>2025-08-20 15:58:10</td>
+                            <td class="action-buttons">
+                                <button class="configure-btn" title="Configure"><i class="fa-solid fa-pencil"></i></button>
+                                <button title="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-id="DCU-002" data-type="Gateway" data-ip="192.168.1.11" data-port="8081">
+                            <td>DCU-002</td>
+                            <td>Gateway</td>
+                            <td><span class="status-badge online">Online</span></td>
+                            <td>2025-08-20 16:01:05</td>
+                            <td class="action-buttons">
+                                <button class="configure-btn" title="Configure"><i class="fa-solid fa-pencil"></i></button>
+                                <button title="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr data-id="DCU-003" data-type="DCU" data-ip="192.168.1.12" data-port="8082">
+                            <td>DCU-003</td>
+                            <td>DCU</td>
+                            <td><span class="status-badge offline">Offline</span></td>
+                            <td>2025-08-19 10:30:00</td>
+                            <td class="action-buttons">
+                                <button class="configure-btn" title="Configure"><i class="fa-solid fa-pencil"></i></button>
+                                <button title="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="module-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title" class="modal-title">Add New Module</h3>
+                <button id="modal-close-btn" class="modal-close">&times;</button>
+            </div>
+            <form id="module-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="module-id">Module ID</label>
+                        <input type="text" id="module-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="module-type">Module Type</label>
+                        <select id="module-type">
+                            <option>DCU</option>
+                            <option>Gateway</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="module-ip">IP Address</label>
+                        <input type="text" id="module-ip" placeholder="e.g., 192.168.1.100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="module-port">Port</label>
+                        <input type="number" id="module-port" placeholder="e.g., 8080" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" id="modal-confirm-btn" class="btn btn-primary">Add Module</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addModuleBtn = document.getElementById('add-module-btn');
+            const moduleTable = document.querySelector('.modules-table tbody');
+            
+            // Modal elements
+            const modal = document.getElementById('module-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const closeModalBtn = document.getElementById('modal-close-btn');
+            const cancelModalBtn = document.getElementById('modal-cancel-btn');
+            const confirmModalBtn = document.getElementById('modal-confirm-btn');
+            const moduleForm = document.getElementById('module-form');
+
+            const openModal = () => {
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('visible'), 10);
+            };
+
+            const closeModal = () => {
+                modal.classList.remove('visible');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            };
+
+            // Open modal for adding a new module
+            addModuleBtn.addEventListener('click', () => {
+                moduleForm.reset();
+                modalTitle.textContent = 'Add New Module';
+                confirmModalBtn.textContent = 'Add Module';
+                document.getElementById('module-id').readOnly = false;
+                openModal();
+            });
+
+            // Open modal for configuring an existing module (using event delegation)
+            moduleTable.addEventListener('click', (e) => {
+                const configureBtn = e.target.closest('.configure-btn');
+                if (configureBtn) {
+                    const row = configureBtn.closest('tr');
+                    const id = row.dataset.id;
+                    const type = row.dataset.type;
+                    const ip = row.dataset.ip;
+                    const port = row.dataset.port;
+
+                    modalTitle.textContent = `Configure Module: ${id}`;
+                    document.getElementById('module-id').value = id;
+                    document.getElementById('module-id').readOnly = true;
+                    document.getElementById('module-type').value = type;
+                    document.getElementById('module-ip').value = ip;
+                    document.getElementById('module-port').value = port;
+                    confirmModalBtn.textContent = 'Save Changes';
+                    openModal();
+                }
+            });
+
+            // Handle form submission
+            moduleForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const isEditing = document.getElementById('module-id').readOnly;
+                if (isEditing) {
+                    alert('Module configuration saved!');
+                } else {
+                    alert('New module added!');
+                }
+                closeModal();
+            });
+            
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        });
+    </script>
+</body>
+</html>

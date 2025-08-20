@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Vendaa</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #1D4ED8;
+            --secondary-gray: #F3F4F6;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --border-color: #E5E7EB;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", Arial, sans-serif;
+            background-color: var(--secondary-gray);
+            color: var(--text-dark);
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            background-color: var(--white);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: var(--secondary-gray);
+            color: var(--text-dark);
+        }
+
+        .sidebar-nav a.active {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .sidebar-nav a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+        
+        /* --- Main Content --- */
+        .main-content {
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .main-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .header-actions .icon-btn {
+            font-size: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+        
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 200px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            overflow: hidden;
+            z-index: 10;
+        }
+        
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-dropdown a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+        
+        .profile-dropdown a:hover {
+            background-color: var(--secondary-gray);
+        }
+        
+        /* --- Dashboard Cards (Updated) --- */
+        .card {
+            background-color: var(--white);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 24px; /* Added for vertical spacing */
+        }
+
+        .card:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .wallet-card .balance {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 24px;
+        }
+
+        /* --- Chart Card (Updated for Stability) --- */
+        .chart-container {
+            position: relative;
+            height: 400px; /* Set fixed height to stabilize chart */
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            width: auto; /* Allow button to size to content */
+            padding: 12px 24px; /* Adjusted padding */
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #1E40AF;
+        }
+        
+        /* Recent Vends Table */
+        .vends-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .vends-table th, .vends-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .vends-table th {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .vends-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-badge.successful {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .status-badge.failed {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+             .main-header h2 {
+                font-size: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://i.pravatar.cc/40?img=1" alt="Organization Logo">
+                <h1>TechSolutions Inc.</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="home.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="wallet.html" class="active"><i class="fa-solid fa-wallet"></i> Wallet</a>
+                <a href="meters.html"><i class="fa-solid fa-bolt"></i> Meters</a>
+                <a href="vending.html"><i class="fa-solid fa-file-invoice"></i> Vending</a>
+                <a href="reports.html"><i class="fa-solid fa-chart-pie"></i> Reports</a>
+                <a href="communication.html"><i class="fa-solid fa-sliders"></i> Communication</a>
+            </nav>
+            <div class="sidebar-footer">
+                 <nav class="sidebar-nav">
+                     <a href="#"><i class="fa-solid fa-user-circle"></i> Account</a>
+                     <a href="#"><i class="fa-solid fa-code"></i> Developer</a>
+                     <a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                 </nav>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h2>Dashboard</h2>
+                <div class="header-actions">
+                    <i class="fa-regular fa-bell icon-btn"></i>
+                    <i class="fa-regular fa-envelope icon-btn"></i>
+                    <div class="user-profile" id="user-profile-btn">
+                        <img src="https://i.pravatar.cc/40?img=3" alt="User Avatar">
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <a href="#">My Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="card wallet-card">
+                <div class="card-header">
+                    <h3 class="card-title">Wallet Balance</h3>
+                    <span style="font-weight: 500;">NGN</span>
+                </div>
+                <p class="balance">₦1,250,340.50</p>
+                <button class="btn-primary">Top-up Wallet</button>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header">
+                     <h3 class="card-title">Vend History</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="vendHistoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                 <div class="card-header">
+                    <h3 class="card-title">Recent Vends</h3>
+                    <a href="#" style="font-size: 14px; color: var(--primary-blue); text-decoration: none;">View All</a>
+                </div>
+                <table class="vends-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Meter Number</th>
+                            <th>Amount (NGN)</th>
+                            <th>Status</th>
+                            <th>Token</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-08-20 13:45</td>
+                            <td>04123456789</td>
+                            <td>5,000.00</td>
+                            <td><span class="status-badge successful">Successful</span></td>
+                            <td>1234-5678-9012-3456</td>
+                        </tr>
+                        <tr>
+                            <td>2025-08-20 11:20</td>
+                            <td>04987654321</td>
+                            <td>10,000.00</td>
+                            <td><span class="status-badge successful">Successful</span></td>
+                            <td>2345-6789-0123-4567</td>
+                        </tr>
+                        <tr>
+                            <td>2025-08-19 18:10</td>
+                            <td>04555666777</td>
+                            <td>2,500.00</td>
+                            <td><span class="status-badge failed">Failed</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>2025-08-19 15:03</td>
+                            <td>04112233445</td>
+                            <td>5,000.00</td>
+                            <td><span class="status-badge successful">Successful</span></td>
+                            <td>3456-7890-1234-5678</td>
+                        </tr>
+                         <tr>
+                            <td>2025-08-18 09:30</td>
+                            <td>04123456789</td>
+                            <td>1,000.00</td>
+                            <td><span class="status-badge successful">Successful</span></td>
+                            <td>4567-8901-2345-6789</td>
+                        </tr>
+                        <tr><td>2025-08-18 08:00</td><td>04987654321</td><td>20,000.00</td><td><span class="status-badge successful">Successful</span></td><td>5678-9012-3456-7890</td></tr>
+                         <tr><td>2025-08-17 21:55</td><td>04112233445</td><td>3,000.00</td><td><span class="status-badge successful">Successful</span></td><td>6789-0123-4567-8901</td></tr>
+                         <tr><td>2025-08-17 14:22</td><td>04555666777</td><td>5,000.00</td><td><span class="status-badge successful">Successful</span></td><td>7890-1234-5678-9012</td></tr>
+                         <tr><td>2025-08-16 12:00</td><td>04123456789</td><td>2,500.00</td><td><span class="status-badge successful">Successful</span></td><td>8901-2345-6789-0123</td></tr>
+                         <tr><td>2025-08-16 10:15</td><td>04987654321</td><td>1,500.00</td><td><span class="status-badge failed">Failed</span></td><td>-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- User Profile Dropdown Logic ---
+            const userProfileBtn = document.getElementById('user-profile-btn');
+            const profileDropdown = document.getElementById('profile-dropdown');
+
+            userProfileBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                profileDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!userProfileBtn.contains(event.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+
+            // --- Chart.js Vend History Chart ---
+            const ctx = document.getElementById('vendHistoryChart').getContext('2d');
+            const vendHistoryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Aug 14', 'Aug 15', 'Aug 16', 'Aug 17', 'Aug 18', 'Aug 19', 'Today'],
+                    datasets: [{
+                        label: 'Vends (NGN)',
+                        data: [12000, 19000, 4000, 8000, 21000, 2500, 15000],
+                        backgroundColor: 'rgba(29, 78, 216, 0.8)',
+                        borderColor: 'rgba(29, 78, 216, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return '₦' + value / 1000 + 'k';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
