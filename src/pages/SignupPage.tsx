@@ -54,15 +54,15 @@ const SignupPage = () => {
       </div>
       <form onSubmit={handleSubmit}>
         <div className="mb-5">
-          <Label htmlFor="orgName">Organization Name</Label>
+          <Label htmlFor="orgName" className='text-left'>Organization Name</Label>
           <Input type="text" id="orgName" required onChange={handleInputChange} />
         </div>
         <div className="mb-5">
-          <Label htmlFor="email">Email Address</Label>
+          <Label htmlFor="email" className='text-left'>Email Address</Label>
           <Input type="email" id="email" required onChange={handleInputChange} />
         </div>
         <div className="mb-5">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className='text-left'>Password</Label>
           <Input type="password" id="password" required onChange={handleInputChange} />
           {passwordError && <p className="text-danger text-xs mt-1">{passwordError}</p>}
         </div>
