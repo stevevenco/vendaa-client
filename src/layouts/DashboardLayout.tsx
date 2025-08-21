@@ -30,14 +30,14 @@ const DashboardLayout = ({ children, title }: { children: React.ReactNode, title
       {/* Right side */}
       <div className="flex flex-1 flex-col md:ml-64">
         {/* Header */}
-        <header className="fixed top-0 left-0 md:left-64 right-0 z-40 bg-white border-b">
+        <header className="bg-white border-b mb-8">
           <div className="h-16 flex items-center justify-between px-4 md:px-6">
             <Header onMenuClick={() => setSidebarOpen(!isSidebarOpen)} title={title} />
           </div>
         </header>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto mt-16 p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
           {children}
         </main>
       </div>
