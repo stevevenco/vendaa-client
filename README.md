@@ -1,69 +1,101 @@
-# React + TypeScript + Vite
+# React TypeScript Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React application built with TypeScript, Vite, and TailwindCSS, using Docker for development.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Docker
+- Make
 
-## Expanding the ESLint configuration
+That's all! You don't need Node.js or npm installed locally since we're using containerized development.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd <project-name>
+```
+---
+### Before you continue, do this:
+> This is not compulsory and will not affect your development, but if you want some personalization, read through.
+- change the package name on `package.json` and `package-lock.json` (always do an highlight(Ctr Shift L) to see places the original name was used)
+- change the image and container name on Makefile (always do an highlight(Ctr Shift L) to see places the original name was used)
+---
+2. Build the development Docker image
+```bash
+make dev-build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. Start the development server
+```bash
+make dev
 ```
+
+The application will be available at `http://localhost:5173`
+
+## Available Commands
+
+### Development
+- `make dev` - Start the development server
+- `make install` - Install/update dependencies
+- `make add` - Add a new dependency (will prompt for package name)
+- `make add-dev` - Add a new dev dependency (will prompt for package name)
+- `make remove` - Remove a dependency (will prompt for package name)
+- `make dev-shell` - Open a shell in the development container
+
+### Cleanup
+- `make stop` - Stop the development container
+- `make clean` - Remove container, image, and node_modules volume
+
+### Help
+- `make help` - Display all available commands
+
+## Managing Dependencies
+
+All dependency management should be done through the provided Make commands to ensure consistency across development environments.
+
+Example of adding a new package:
+```bash
+make add    # Will prompt for package name
+# Enter package name when prompted, e.g., axios
+```
+
+## Troubleshooting
+
+1. If you see permission errors:
+   - Run `sudo make clean` to remove all Docker artifacts
+   - Rebuild with `make dev-build`
+
+2. If the development server isn't reflecting changes:
+   - Stop the container with `make stop`
+   - Start it again with `make dev`
+
+3. If dependencies seem out of sync:
+   - Run `make clean` to remove everything
+   - Run `make dev-build` to rebuild the image
+   - Run `make install` to reinstall dependencies
+   - Run `make dev` to start the server
+
+## Project Structure
+
+```
+├── Dockerfile.dev        # Development Docker configuration
+├── Makefile             # Development commands
+├── package.json         # Project dependencies and scripts
+├── src/                 # Source code
+├── tailwind.config.js   # Tailwind CSS configuration
+├── tsconfig.json        # TypeScript configuration
+└── vite.config.ts       # Vite configuration
+```
+
+## Contributing
+
+1. Create a new branch for your feature
+2. Make your changes
+3. Test your changes using the containerized environment
+4. Submit a pull request
+
+## License
+
+....
