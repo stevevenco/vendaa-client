@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 
 const transactions = [
@@ -39,7 +38,7 @@ const transactions = [
 const RecentTransactionsTable = () => {
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className='flex flex-col items-start'>
         <CardTitle>Recent Transactions</CardTitle>
       </CardHeader>
       <CardContent>
