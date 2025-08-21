@@ -4,32 +4,27 @@ import AuthLayout from '../features/auth/components/AuthLayout';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../components/ui/dialog';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     orgName: '',
-    phone: '',
     email: '',
     password: '',
-    otp: '',
   });
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState('');
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [otp, setOtp] = useState('');
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,8 +34,15 @@ const SignupPage = () => {
       return;
     }
     setPasswordError('');
-    console.log({ ...formData, logo: logoPreview ? 'logo-uploaded' : 'no-logo' });
-    alert('Account creation request received! Check console for details.');
+    setIsOtpModalOpen(true);
+  };
+
+  const handleOtpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('OTP submitted:', otp);
+    alert('OTP Verified! You can now log in.');
+    setIsOtpModalOpen(false);
+    // In a real app, you would redirect to the login page or dashboard
   };
 
   return (
@@ -56,23 +58,6 @@ const SignupPage = () => {
           <Input type="text" id="orgName" required onChange={handleInputChange} />
         </div>
         <div className="mb-5">
-          <Label>Organization Logo</Label>
-          <div className="flex items-center gap-4">
-            <div
-              className="w-16 h-16 rounded-full bg-secondary-gray bg-cover bg-center border-2 border-dashed border-border-color"
-              style={{ backgroundImage: `url(${logoPreview})` }}
-            ></div>
-            <Label htmlFor="logoUpload" className="cursor-pointer text-primary-blue font-medium hover:underline">
-              Click to upload
-            </Label>
-            <Input type="file" id="logoUpload" accept="image/*" className="hidden" onChange={handleLogoChange} />
-          </div>
-        </div>
-        <div className="mb-5">
-          <Label htmlFor="phone">Phone Number</Label>
-          <Input type="tel" id="phone" required onChange={handleInputChange} />
-        </div>
-        <div className="mb-5">
           <Label htmlFor="email">Email Address</Label>
           <Input type="email" id="email" required onChange={handleInputChange} />
         </div>
@@ -80,10 +65,6 @@ const SignupPage = () => {
           <Label htmlFor="password">Password</Label>
           <Input type="password" id="password" required onChange={handleInputChange} />
           {passwordError && <p className="text-danger text-xs mt-1">{passwordError}</p>}
-        </div>
-        <div className="mb-5">
-          <Label htmlFor="otp">Email Verification OTP</Label>
-          <Input type="text" id="otp" placeholder="Enter 6-digit code" required onChange={handleInputChange} />
         </div>
         <Button type="submit">Create Account</Button>
       </form>
@@ -95,6 +76,33 @@ const SignupPage = () => {
           </Link>
         </p>
       </div>
+
+      <Dialog open={isOtpModalOpen} onOpenChange={setIsOtpModalOpen}>
+        <DialogContent
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Enter Verification Code</DialogTitle>
+            <DialogDescription>
+              A 6-digit verification code has been sent to your email address.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleOtpSubmit}>
+            <div className="py-4">
+              <Label htmlFor="otp">Verification Code</Label>
+              <Input
+                id="otp"
+                placeholder="Enter 6-digit code"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+            </div>
+            <Button type="submit">Verify</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AuthLayout>
   );
 };
