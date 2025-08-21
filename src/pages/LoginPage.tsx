@@ -4,28 +4,34 @@ import AuthLayout from '../features/auth/components/AuthLayout';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../components/ui/dialog';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
-  const [showOtp, setShowOtp] = useState(false);
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      alert('Please enter email and password.');
       return;
     }
-    if (!showOtp) {
-      setShowOtp(true);
-      alert('Login successful! Please enter your 2FA OTP to continue.');
-    } else {
-      console.log({ email, password, otp });
-      alert('OTP Verified! Redirecting to dashboard...');
-      navigate('/dashboard');
-    }
+    setIsOtpModalOpen(true);
+  };
+
+  const handleOtpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ email, password, otp });
+    setIsOtpModalOpen(false);
+    navigate('/dashboard');
   };
 
   return (
@@ -61,18 +67,6 @@ const LoginPage = () => {
             Forgot Password?
           </a>
         </div>
-        {showOtp && (
-          <div className="mb-5">
-            <Label htmlFor="loginOtp">Email OTP</Label>
-            <Input
-              type="text"
-              id="loginOtp"
-              placeholder="Enter 6-digit code"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-          </div>
-        )}
         <Button type="submit">Login</Button>
       </form>
       <div className="text-center mt-6">
@@ -83,6 +77,33 @@ const LoginPage = () => {
           </Link>
         </p>
       </div>
+
+      <Dialog open={isOtpModalOpen} onOpenChange={setIsOtpModalOpen}>
+        <DialogContent
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Enter Verification Code</DialogTitle>
+            <DialogDescription>
+              A 6-digit verification code has been sent to your email address.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleOtpSubmit}>
+            <div className="py-4">
+              <Label htmlFor="otp">Verification Code</Label>
+              <Input
+                id="otp"
+                placeholder="Enter 6-digit code"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+            </div>
+            <Button type="submit">Verify</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AuthLayout>
   );
 };
