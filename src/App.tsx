@@ -1,13 +1,15 @@
-import './App.css'
-// src/App.tsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import AuthPage from './pages/AuthPage';
+
 function App() {
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-gray-900">
-      <h1 className="text-3xl font-bold text-white underline">
-        Hello, Tailwind!
-      </h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AuthPage />} />
+        <Route path="/auth" element={<AuthPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
