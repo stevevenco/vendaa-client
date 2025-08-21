@@ -1,4 +1,3 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faUpload, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Input } from '../../../components/ui/input';
@@ -16,7 +15,7 @@ const MetersToolbar = () => {
         />
       </div>
       <div className="flex gap-3">
-        <Button variant="outline">
+        <Button>
           <FontAwesomeIcon icon={faUpload} className="mr-2" />
           Bulk Import
         </Button>

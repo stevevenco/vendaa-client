@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Pagination = () => {
   return (
     <div className="flex justify-between items-center mt-5 text-sm text-text-light">
