@@ -3,6 +3,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import WalletPage from './pages/WalletPage';
+import MetersPage from './pages/MetersPage';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/wallet" element={<WalletPage />} />
+      <Route path="/meters" element={<MetersPage />} />
     </Routes>
   );
 }
