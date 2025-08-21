@@ -8,9 +8,11 @@ const WalletCard = () => {
         <CardTitle>Wallet Balance</CardTitle>
         <span className="font-medium">NGN</span>
       </CardHeader>
-      <CardContent>
-        <p className="text-4xl font-bold text-primary-blue mb-6">₦1,250,340.50</p>
-        <Button className="w-auto px-6">Top-up Wallet</Button>
+      <CardContent className="flex flex-col items-start">
+        <p className="text-4xl font-bold text-primary-blue mb-6">
+          ₦1,250,340.50
+        </p>
+        <Button className="w-auto px-6 self-start">Top-up Wallet</Button>
       </CardContent>
     </Card>
   );
