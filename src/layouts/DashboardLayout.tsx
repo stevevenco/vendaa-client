@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Sidebar from '../features/dashboard/components/Sidebar';
 import Header from '../features/dashboard/components/Header';
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayout = ({ children, title }: { children: React.ReactNode, title: string }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -32,7 +32,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Header */}
         <header className="fixed top-0 left-0 md:left-64 right-0 z-40 bg-white border-b">
           <div className="h-16 flex items-center justify-between px-4 md:px-6">
-            <Header onMenuClick={() => setSidebarOpen(!isSidebarOpen)} />
+            <Header onMenuClick={() => setSidebarOpen(!isSidebarOpen)} title={title} />
           </div>
         </header>
 

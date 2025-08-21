@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faEnvelope, faBars } from '@fortawesome/free-solid-svg-icons';
 
-const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
+const Header = ({ onMenuClick, title }: { onMenuClick: () => void, title: string }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
-    <header className="flex justify-between items-center mb-8">
+    <div className="flex justify-between items-center w-full">
       <button className="md:hidden" onClick={onMenuClick}>
         <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
       </button>
-      <h2 className="text-2xl font-semibold hidden md:block">Dashboard</h2>
+      <h2 className="text-2xl font-semibold">{title}</h2>
       <div className="flex items-center gap-6">
         <FontAwesomeIcon icon={faBell} className="text-text-light text-xl cursor-pointer" />
         <FontAwesomeIcon icon={faEnvelope} className="text-text-light text-xl cursor-pointer" />
@@ -27,7 +27,7 @@ const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
           )}
         </div>
       </div>
-    </header>
+    </div>
   );
 };
 

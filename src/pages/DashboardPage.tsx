@@ -5,7 +5,7 @@ import RecentVendsTable from '../features/dashboard/components/RecentVendsTable'
 
 const DashboardPage = () => {
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Dashboard">
       <div className="space-y-6">
         <WalletCard />
         <VendHistoryChart />
