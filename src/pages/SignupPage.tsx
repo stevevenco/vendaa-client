@@ -1,5 +1,5 @@
 import { useState, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../features/auth/components/AuthLayout';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -21,6 +21,7 @@ const SignupPage = () => {
   const [passwordError, setPasswordError] = useState('');
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otp, setOtp] = useState('');
+  const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -40,9 +41,9 @@ const SignupPage = () => {
   const handleOtpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('OTP submitted:', otp);
-    alert('OTP Verified! You can now log in.');
+    alert('OTP Verified! Redirecting to dashboard...');
     setIsOtpModalOpen(false);
-    // In a real app, you would redirect to the login page or dashboard
+    navigate('/dashboard');
   };
 
   return (
